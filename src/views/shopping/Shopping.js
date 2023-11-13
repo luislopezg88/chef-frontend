@@ -5,6 +5,26 @@ import NavbarClient from "components/Navbars/NavbarClient";
 import { API_URL } from "service/config";
 //Hook
 import { useShopping } from "state/stateShopping";
+import "./shopping.css";
+///
+const SideMenu = ({ children, isOpen, setIsOpen }) => {
+  const handleMenuToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const menuStyle = {
+    transform: isOpen ? "translateX(0)" : "translateX(-100%)",
+  };
+
+  return (
+    <div>
+      <div className={`side-menu ${isOpen ? "open" : ""}`} style={menuStyle}>
+        <div className="menu-content">{children}</div>
+      </div>
+      {isOpen && <div className="overlay" onClick={handleMenuToggle}></div>}
+    </div>
+  );
+};
 
 const Compras = () => {
   const { cart, addToProduct, removeFromProduct } = useShopping();
@@ -14,6 +34,7 @@ const Compras = () => {
   const [platos, setPlatos] = useState({ data: [], recordsTotal: 0 });
   const [isLoadingPlato, setIsLoadingPlato] = useState(false);
   const [error, setError] = useState("");
+  const [sideMenu, setSideMenu] = useState(false);
 
   const fetching = async () => {
     setIsLoadingChef(true);
@@ -93,7 +114,8 @@ const Compras = () => {
   console.log(cart);
   return (
     <>
-      <NavbarClient />
+      <NavbarClient sideMenu={sideMenu} setSideMenu={setSideMenu} />
+
       <main className="profile-page">
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
@@ -264,6 +286,30 @@ const Compras = () => {
               {error}
             </Alert>
           </Container>
+          <SideMenu isOpen={sideMenu} setIsOpen={setSideMenu}>
+            <di>
+              <div className="mb-2">
+                <h2>Compras</h2>
+              </div>
+              <div>
+                <div>
+                  {cart.map((item, index) => (
+                    <div key={index} className="d-flex flex-column mb-2">
+                      <span>
+                        Producto:<b>{item.nombre}</b>
+                      </span>
+                      <span>
+                        Cantidad:<b>{item?.subTotal ?? 0}</b>
+                      </span>
+                      <span>
+                        Precio:<b>{item?.precio ?? 0}</b>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </di>
+          </SideMenu>
         </section>
       </main>
       {/*<SimpleFooter />*/}

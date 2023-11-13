@@ -13,7 +13,7 @@ import {
   Col,
 } from "reactstrap";
 
-const NavbarClient = () => {
+const NavbarClient = ({ sideMenu, setSideMenu }) => {
   const [state, setState] = useState({
     collapseClasses: "",
     collapseOpen: false,
@@ -86,11 +86,17 @@ const NavbarClient = () => {
 
               <Nav className="align-items-lg-center ml-lg-auto" navbar>
                 <NavItem className="d-none d-lg-block ml-lg-4">
-                  <Button className="btn-neutral btn-icon" color="default">
+                  <Button
+                    className="btn-neutral btn-icon"
+                    color="default"
+                    onClick={() => {
+                      setSideMenu(!sideMenu);
+                    }}
+                  >
                     <span className="btn-inner--icon">
                       <i className="fa fa-cloud-download mr-2" />
                     </span>
-                    <span className="nav-link-inner--text ml-1">Carrito</span>
+                    <span className="nav-link-inner--text ml-1">Compras</span>
                   </Button>
                 </NavItem>
               </Nav>
