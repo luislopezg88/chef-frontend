@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -11,70 +11,33 @@ import {
   InputGroupAddon,
   FormGroup,
   Input,
+  Label,
   Spinner,
   Alert,
 } from "reactstrap";
-import { useNavigate } from "react-router-dom";
-import NavbarSesion from "components/Navbars/NavbarSesion.js";
+import { useParams, useNavigate } from "react-router-dom";
+import DemoNavbar from "components/Navbars/DemoNavbar.js";
 //Service
 import { API_URL } from "service/config";
-//Hook
-import { useAuth } from "state/stateAuth";
 
 const initial = {
-  _id: "",
-  id_user: "",
   nombre: "",
-  sexo: "",
-  edad: "",
-  foto: "",
-  telefono: "",
-  ubicacion: "",
-  experiencialaboral: "",
-  educacionculinaria: "",
-  disponibilidad: "",
-  especialidadesculinarias: [],
-  habilidadesadicionales: [],
-  redessociales: [],
-  historialpuntuaciones: [],
+  descripcion: "",
+  regiones: "",
+  estilos: "",
+  ingredientes: "",
+  tecnicas: "",
+  tipo: "",
+  imagen: "",
+  precio: 0,
 };
 
-const ProfileEdit = () => {
-  const sesion = useAuth();
+const Platos = () => {
+  const { idChef } = useParams();
   const history = useNavigate();
   const [form, setForm] = useState(initial);
-  const [isLoading, setIsLoading] = useState(false);
   const [process, setProcess] = useState(false);
   const [error, setError] = useState("");
-
-  const fetching = async (id) => {
-    if (id === 0) {
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_URL}/chef/${id}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (response.ok) {
-        const json = await response.json();
-        setForm(json.body.data);
-      } else {
-        const json = await response.json();
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (sesion.info.id) {
-      fetching(sesion.info.id ?? 0);
-    }
-  }, [sesion]);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -83,80 +46,70 @@ const ProfileEdit = () => {
     }));
   };
 
-  const handleChangeMulti = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: [...prev[name], value],
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcess(true);
     try {
-      const response = await fetch(`${API_URL}/chef/${form._id}`, {
-        method: "PUT",
+      const response = await fetch(`${API_URL}/platos/`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form }),
+        body: JSON.stringify({ ...form, idChef }),
       });
       if (response.ok) {
         const json = await response.json();
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
-        console.log("error");
       }
     } catch (error) {
       console.error(error);
     } finally {
       setProcess(false);
-      //setForm(initial);
+      setForm(initial);
     }
   };
 
   const onDismiss = () => setError("");
 
-  const catEspecialidades = [
-    { label: "Cocina Francesa", value: "1" },
-    { label: "Cocina Italiana", value: "2" },
-    { label: "Cocina Asiática", value: "3" },
-    { label: "Cocina Mexicana", value: "4" },
-    { label: "Cocina Mediterránea", value: "5" },
-    { label: "Cocina Vegetariana", value: "6" },
-    { label: "Cocina Vegana", value: "7" },
-    { label: "Cocina de Fusión", value: "8" },
-    { label: "Cocina de Autor", value: "9" },
-    { label: "Cocina Molecular", value: "10" },
-    { label: "Parrilla/Asados", value: "11" },
-    { label: "Repostería", value: "12" },
-    { label: "Sushi", value: "13" },
-    { label: "Tapas", value: "14" },
-    { label: "Comida Étnica", value: "15" },
+  const catCocinas = [
+    { label: "Cocina Italiana", value: 1 },
+    { label: "Cocina Francesa", value: 2 },
+    { label: "Cocina Española", value: 3 },
+    { label: "Cocina Mexicana", value: 4 },
+    { label: "Cocina China", value: 5 },
+    { label: "Cocina Japonesa", value: 6 },
+    { label: "Cocina India", value: 7 },
+    { label: "Cocina Tailandesa", value: 8 },
+    { label: "Cocina Griega", value: 9 },
+    { label: "Cocina Turca", value: 10 },
+    { label: "Cocina Marroquí", value: 11 },
+    { label: "Cocina Brasileña", value: 12 },
   ];
 
-  const catAdicionales = [
-    { label: "Gestión de Inventarios", value: "1" },
-    { label: "Planificación de Menús", value: "2" },
-    { label: "Normativas Sanitarias", value: "3" },
-    { label: "Presentación de Platos", value: "4" },
-    { label: "Creatividad Culinaria", value: "5" },
-    { label: "Manejo de Utensilios Específicos", value: "6" },
-    { label: "Dominio de Técnicas de Cocina", value: "7" },
-    { label: "Trabajo en Equipo", value: "8" },
-    { label: "Comunicación con el Cliente", value: "9" },
-    { label: "Gestión del Tiempo", value: "10" },
-    { label: "Negociación con Proveedores", value: "11" },
-    { label: "Enología", value: "12" },
-    { label: "Experiencia en Catering", value: "13" },
-    { label: "Cocina Saludable", value: "14" },
-    { label: "Capacidades Multitarea", value: "15" },
+  const catEstilos = [
+    { label: "Cocina de Fusión", value: 1 },
+    { label: "Cocina Tradicional", value: 2 },
+    { label: "Cocina Contemporánea", value: 3 },
+  ];
+
+  const catTipo = [
+    { label: "Platos Principales" },
+    { label: "Aperitivos" },
+    { label: "Ensaladas" },
+    { label: "Postres" },
+    { label: "Desayunos y Brunch" },
+    { label: "Bebidas" },
+    { label: "Platos de Alta Cocina" },
+    { label: "Platos de Comfort Food" },
+    { label: "Platos Internacionales" },
+    { label: "Platos para Compartir" },
+    { label: "Platos Saludables" },
   ];
 
   return (
     <>
-      <NavbarSesion />
-      <main className="profile-page">
+      <DemoNavbar />
+      <main className="profile-page" style={{ background: "#adb5bd" }}>
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
           <div className="shape shape-style-1 shape-default alpha-4">
@@ -184,7 +137,10 @@ const ProfileEdit = () => {
         </section>
         <section className="section">
           <Container>
-            <Card className="card-profile shadow mt--300">
+            <Card
+              className="card-profile shadow mt--300"
+              style={{ background: "#adb5bd" }}
+            >
               <div className="px-4">
                 <Row className="justify-content-center">
                   <Col className="order-lg-2" lg="3">
@@ -193,7 +149,9 @@ const ProfileEdit = () => {
                         <img
                           alt="..."
                           className="rounded-circle"
-                          src={require("assets/img/theme/team-4-800x800.jpg")}
+                          src={require("assets/img/theme/comida.jpg")}
+                          height={200}
+                          width={200}
                         />
                       </a>
                     </div>
@@ -206,12 +164,12 @@ const ProfileEdit = () => {
                       <Button
                         className="float-right"
                         color="default"
+                        href="#pablo"
                         onClick={(e) => {
                           e.preventDefault();
                           history("/profile");
                         }}
                         size="sm"
-                        type="button"
                       >
                         volver
                       </Button>
@@ -236,9 +194,9 @@ const ProfileEdit = () => {
                 </Row>
                 <div className="text-center mt-5">
                   <h3>
-                    {form?.nombre ?? ""}
+                    <b>Chef /</b>
                     <span className="font-weight-light mr-1 ml-1">
-                      /{form?.edad ?? ""}
+                      {form?.nombre ?? ""}{" "}
                     </span>
                   </h3>
                 </div>
@@ -247,6 +205,7 @@ const ProfileEdit = () => {
                     <Col lg="12">
                       <Form role="form" onSubmit={handleSubmit}>
                         <FormGroup>
+                          <Label for="exampleEmail">Nombre del plato</Label>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
@@ -254,84 +213,30 @@ const ProfileEdit = () => {
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              placeholder="Nombre"
+                              placeholder="Nombre del plato"
                               name="nombre"
                               type="text"
                               value={form.nombre}
                               onChange={handleChange}
-                              disabled={isLoading}
                             />
                           </InputGroup>
                         </FormGroup>
                         <FormGroup>
+                          <Label for="exampleEmail">
+                            Descripción del plato
+                          </Label>
                           <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
                             <Input
-                              placeholder="Teléfono"
-                              name="telefono"
-                              type="text"
-                              value={form.telefono}
-                              onChange={handleChange}
-                              disabled={isLoading}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder="Edad"
-                              name="edad"
-                              type="text"
-                              value={form.edad}
-                              onChange={handleChange}
-                              disabled={isLoading}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder="Dirección"
-                              name="ubicacion"
-                              type="text"
-                              value={form.ubicacion}
-                              onChange={handleChange}
-                              disabled={isLoading}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder="Experiencia laboraral"
-                              name="experiencialaboral"
+                              placeholder="Descripción del plato"
+                              name="descripcion"
                               type="textarea"
-                              value={form.experiencialaboral}
+                              value={form.descripcion}
                               onChange={handleChange}
-                              disabled={isLoading}
                             />
                           </InputGroup>
                         </FormGroup>
                         <FormGroup>
+                          <Label for="exampleEmail">Cocina regional</Label>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
@@ -339,16 +244,69 @@ const ProfileEdit = () => {
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              placeholder="Educacion culinaria"
-                              name="educacionculinaria"
-                              type="textarea"
-                              value={form.educacionculinaria}
+                              placeholder="Cocina regional"
+                              name="regiones"
+                              type="select"
+                              value={form.regiones}
                               onChange={handleChange}
-                              disabled={isLoading}
+                            >
+                              {catCocinas.map((item, index) => (
+                                <option value={item.value} key={index}>
+                                  {item.label}
+                                </option>
+                              ))}
+                            </Input>
+                          </InputGroup>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="exampleEmail">Estilo de cocina</Label>
+                          <InputGroup className="input-group-alternative">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="ni ni-lock-circle-open" />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input
+                              placeholder="Estilos de cocina"
+                              name="estilos"
+                              type="select"
+                              value={form.estilos}
+                              onChange={handleChange}
+                            >
+                              {catEstilos.map((item, index) => (
+                                <option value={item.value} key={index}>
+                                  {item.label}
+                                </option>
+                              ))}
+                            </Input>
+                          </InputGroup>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="exampleEmail">Ingredientes</Label>
+                          <InputGroup className="input-group-alternative">
+                            <Input
+                              placeholder="Ingredientes"
+                              name="ingredientes"
+                              type="textarea"
+                              value={form.ingredientes}
+                              onChange={handleChange}
+                            />
+                          </InputGroup>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="exampleEmail">Tecnica</Label>
+                          <InputGroup className="input-group-alternative">
+                            <Input
+                              placeholder="Tecnicas"
+                              name="tecnicas"
+                              type="textarea"
+                              value={form.tecnicas}
+                              onChange={handleChange}
                             />
                           </InputGroup>
                         </FormGroup>
                         <FormGroup className="mb-3">
+                          <Label for="exampleEmail">Tipo</Label>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
@@ -359,63 +317,33 @@ const ProfileEdit = () => {
                               id="exampleSelect"
                               type="select"
                               placeholder="Genero"
-                              name="sexo"
-                              value={form.sexo}
+                              name="tipo"
+                              value={form.tipo}
                               onChange={handleChange}
-                              disabled={isLoading}
                             >
-                              <option value="masculino">Masculino</option>
-                              <option value="femenino">Femenino</option>
-                              <option value="otro">otro</option>
-                            </Input>
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup className="mb-3">
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-email-83" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              type="select"
-                              placeholder="Tipo de cocina"
-                              name="especialidadesculinarias"
-                              value={form.especialidadesculinarias}
-                              onChange={handleChangeMulti}
-                              disabled={isLoading}
-                              multiple
-                            >
-                              {catEspecialidades.map((item) => (
-                                <option value={item.value} key={item.value}>
+                              {catTipo.map((item, index) => (
+                                <option value={item.value} key={index}>
                                   {item.label}
                                 </option>
                               ))}
                             </Input>
                           </InputGroup>
                         </FormGroup>
-                        <FormGroup className="mb-3">
+                        <FormGroup>
+                          <Label for="exampleEmail">Precio del plato</Label>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-email-83" />
+                                <i className="ni ni-lock-circle-open" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              type="select"
-                              placeholder="Especialidades culinarias"
-                              name="habilidadesadicionales"
-                              value={form.habilidadesadicionales}
-                              onChange={handleChangeMulti}
-                              disabled={isLoading}
-                              multiple
-                            >
-                              {catAdicionales.map((item) => (
-                                <option value={item.value} key={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </Input>
+                              placeholder="Precio"
+                              name="precio"
+                              type="text"
+                              value={form.precio}
+                              onChange={handleChange}
+                            />
                           </InputGroup>
                         </FormGroup>
                         <div className="text-center">
@@ -424,11 +352,9 @@ const ProfileEdit = () => {
                             color="primary"
                             type="submit"
                           >
-                            <span className="mr-2">
-                              {process ? (
-                                <Spinner size="sm">Loading...</Spinner>
-                              ) : null}
-                            </span>
+                            {process ? (
+                              <Spinner size="sm">Loading...</Spinner>
+                            ) : null}
                             Guardar
                           </Button>
                         </div>
@@ -449,9 +375,4 @@ const ProfileEdit = () => {
   );
 };
 
-export default ProfileEdit;
-/*
-disponibilidad: "",
-redessociales: [],
-historialpuntuaciones: [],
-*/
+export default Platos;

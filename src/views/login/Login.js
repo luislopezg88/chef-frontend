@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   Alert,
+  Spinner,
 } from "reactstrap";
 //Hook
 import { useAuth } from "state/stateAuth";
@@ -29,6 +30,7 @@ const initial = {
 const Login = () => {
   const history = useNavigate();
   const [form, setForm] = useState(initial);
+  const [process, setProcess] = useState(false);
   const [error, setError] = useState("");
   const sesion = useAuth();
 
@@ -41,7 +43,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setProcess(true);
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
@@ -58,6 +60,7 @@ const Login = () => {
     } catch (error) {
       console.error(error);
     } finally {
+      setProcess(false);
       setForm(initial);
     }
   };
@@ -134,6 +137,11 @@ const Login = () => {
 
                       <div className="text-center">
                         <Button className="my-4" color="primary" type="subtmit">
+                          <span className="mr-2">
+                            {process ? (
+                              <Spinner size="sm">Loading...</Spinner>
+                            ) : null}
+                          </span>
                           Sign in
                         </Button>
                       </div>
@@ -165,12 +173,3 @@ const Login = () => {
 };
 
 export default Login;
-/*
-<img
-                            alt="..."
-                            src={
-                              require("assets/img/icons/common/github.svg")
-                                .default
-                            }
-                          />
-*/

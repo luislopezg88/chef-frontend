@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Container, Row, Col } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import DemoNavbar from "components/Navbars/DemoNavbar.js";
+import NavbarSesion from "components/Navbars/NavbarSesion.js";
 //Service
 import { API_URL } from "service/config";
 //Hook
@@ -9,8 +9,30 @@ import { useAuth } from "state/stateAuth";
 const Profile = () => {
   const sesion = useAuth();
   const history = useNavigate();
-  const [data, setData] = useState(undefined);
+  const [data, setData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [platos, setPlatos] = useState({ data: [], recordsTotal: 0 });
+  const [isLoadingPlato, setIsLoadingPlato] = useState(false);
+
+  const fetchingPlatos = async (id) => {
+    setIsLoadingPlato(true);
+    try {
+      const response = await fetch(`${API_URL}/platos/chef/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (response.ok) {
+        const json = await response.json();
+        setPlatos(json.body);
+      } else {
+        const json = await response.json();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingPlato(false);
+    }
+  };
 
   const fetching = async (id) => {
     setIsLoading(true);
@@ -22,6 +44,7 @@ const Profile = () => {
       if (response.ok) {
         const json = await response.json();
         setData(json.body.data);
+        fetchingPlatos(json.body.data._id);
       } else {
         const json = await response.json();
       }
@@ -37,26 +60,48 @@ const Profile = () => {
       fetching(sesion.info.id);
     }
   }, [sesion]);
-  /*
-  componentDidMount() {
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
-    this.refs.main.scrollTop = 0;
-  }*/
-  /*
-  data?.nombre ,
-  data?.sexo,
-  data?.foto ,
-  data?.disponibilidad ,
-  especialidadesculinarias: [],
-  habilidadesadicionales: [],
-  redessociales: [],
-  historialpuntuaciones: [],
- */
+
+  if (isLoading) {
+    return (
+      <div className="text-center">
+        <main className="profile-page">
+          <section className="section-profile-cover section-shaped my-0">
+            {" "}
+            <div className="shape shape-style-1 shape-default alpha-4">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
+            {/* SVG separator */}
+            <div className="separator separator-bottom separator-skew">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="none"
+                version="1.1"
+                viewBox="0 0 2560 100"
+                x="0"
+                y="0"
+              >
+                <polygon
+                  className="fill-white"
+                  points="2560 0 2560 100 0 100"
+                />
+              </svg>
+            </div>
+          </section>
+        </main>
+        <h1>Cargando...</h1>
+      </div>
+    );
+  }
 
   return (
     <>
-      <DemoNavbar />
+      <NavbarSesion />
       <main className="profile-page">
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
@@ -122,16 +167,8 @@ const Profile = () => {
                   <Col className="order-lg-1" lg="4">
                     <div className="card-profile-stats d-flex justify-content-center">
                       <div>
-                        <span className="heading">22</span>
-                        <span className="description">Friends</span>
-                      </div>
-                      <div>
-                        <span className="heading">10</span>
-                        <span className="description">Photos</span>
-                      </div>
-                      <div>
-                        <span className="heading">89</span>
-                        <span className="description">Comments</span>
+                        <span className="heading">{platos.recordsTotal}</span>
+                        <span className="description">Platos</span>
                       </div>
                     </div>
                   </Col>
@@ -145,34 +182,65 @@ const Profile = () => {
                   </h3>
                   <div className="h6 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    {data?.ubicacion ?? "Ubicación"}
+                    {data?.ubicacion ?? "Agregar ubicación"}
                   </div>
                   <div className="h6 font-weight-300">
-                    {data?.telefono ?? "0000-000-0000"}
+                    {data?.telefono ?? "Agregar teléfono"}
                   </div>
                   <div className="h6 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    {data?.educacionculinaria ?? "Educacion agregar"}
+                    {data?.educacionculinaria ?? "Agregar educacion"}
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    {data?.experiencialaboral ?? "Experiencia agregar"}
+                    {data?.experiencialaboral ?? "Agregar experiencia"}
                   </div>
                 </div>
                 <div className="mt-5 py-5 border-top text-center">
                   <Row className="justify-content-center">
-                    <Col lg="9">
-                      <p>
-                        An artist of considerable range, Ryan — the name taken
-                        by Melbourne-raised, Brooklyn-based Nick Murphy —
-                        writes, performs and records all of his own music,
-                        giving it a warm, intimate feel with a solid groove
-                        structure. An artist of considerable range.
-                      </p>
-                      <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                        Show more
-                      </a>
+                    <Col lg="12">
+                      <h2>Platos</h2>
+
+                      <Button
+                        className="float-right"
+                        color="default"
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          history(`/plato-agregar/${data?._id ?? 0}`);
+                        }}
+                        size="sm"
+                      >
+                        Agregar
+                      </Button>
                     </Col>
+                    {isLoadingPlato
+                      ? "Cargando..."
+                      : platos.data.length === 0
+                      ? "Sin registro"
+                      : platos.data.map((item, index) => (
+                          <Col sm="3" xs="6" key={index}>
+                            <small className="d-block text-uppercase font-weight-bold mb-4 mt-4">
+                              {item.nombre}
+                            </small>
+                            <img
+                              alt="..."
+                              className="img-fluid rounded shadow"
+                              src={require("assets/img/theme/comida.jpg")}
+                              width={100}
+                              height={100}
+                              style={{ width: "150px" }}
+                            />
+                            <small className="d-block text-uppercase font-weight-bold mb-1">
+                              <b>{item.descripcion}</b>
+                            </small>
+                            <small className="d-block text-uppercase font-weight-bold mb-1">
+                              <b>Costo:</b>
+                              {item.precio}
+                            </small>
+                          </Col>
+                        ))}
                   </Row>
                 </div>
               </div>

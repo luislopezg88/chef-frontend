@@ -14,6 +14,7 @@ import {
   Container,
   Row,
   Col,
+  Spinner,
   Alert,
 } from "reactstrap";
 //Service
@@ -30,6 +31,7 @@ const Signup = () => {
   const history = useNavigate();
   const [form, setForm] = useState(initial);
   const [error, setError] = useState("");
+  const [process, setProcess] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -40,6 +42,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setProcess(true);
 
     try {
       const response = await fetch(`${API_URL}/signup`, {
@@ -49,7 +52,6 @@ const Signup = () => {
       });
       if (response.ok) {
         const json = await response.json();
-        console.log(json);
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
@@ -57,6 +59,7 @@ const Signup = () => {
     } catch (error) {
       console.error(error);
     } finally {
+      setProcess(false);
       setForm(initial);
     }
   };
@@ -187,6 +190,9 @@ const Signup = () => {
 
                       <div className="text-center">
                         <Button className="my-4" color="primary" type="submit">
+                          {process ? (
+                            <Spinner size="sm">Loading...</Spinner>
+                          ) : null}
                           Sign in
                         </Button>
                       </div>
