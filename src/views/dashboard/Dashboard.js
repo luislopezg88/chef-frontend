@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, Container, Row, Col } from "reactstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NavbarSesion from "components/Navbars/NavbarSesion.js";
 //Service
 import { API_URL } from "service/config";
 //Hook
 import { useAuth } from "state/stateAuth";
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,9 +28,11 @@ ChartJS.register(
 
 const Dashboard = () => {
   const sesion = useAuth();
+  const { idChef } = useParams();
   const history = useNavigate();
   const [ventasPorChef, setVentasPorChef] = useState([]);
   const [platosVendidos, setPlatosVendidos] = useState([]);
+  const [platosChef, setPlatosChef] = useState([]);
 
   const options = {
     responsive: true,
@@ -39,17 +40,17 @@ const Dashboard = () => {
       legend: {
         position: "top",
       },
-      title: {
+      /*      title: {
         display: true,
         text: "Ventas por chef",
-      },
+      },*/
     },
   };
 
   const labels = ["noviembre", "diciembre"];
 
   //Solicitud
-  const fetchingVentasPorChef = async (id) => {
+  const fetchingVentasPorChef = async () => {
     try {
       const response = await fetch(`${API_URL}/dashboard/ventasPorChef`, {
         method: "GET",
@@ -78,7 +79,7 @@ const Dashboard = () => {
     }
   };
 
-  const fetchingPlatosVendidos = async (id) => {
+  const fetchingPlatosVendidos = async () => {
     try {
       const response = await fetch(`${API_URL}/dashboard/platosVendidos`, {
         method: "GET",
@@ -105,6 +106,37 @@ const Dashboard = () => {
       console.error(error);
     }
   };
+
+  const fetchingPlatosChef = async (id) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/dashboard/platosVendidos/${id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (response.ok) {
+        const json = await response.json();
+
+        const clone = json.body.data.map((item, i) => {
+          const hue = (i * 50) % 360; // Ajusta el 50 para obtener colores distintos
+          const backgroundColor = `hsla(${hue}, 70%, 50%, 0.5)`;
+
+          return {
+            label: item.nombrePlato,
+            data: [item.totalVentas],
+            backgroundColor: backgroundColor,
+          };
+        });
+        setPlatosChef(clone);
+      } else {
+        const json = await response.json();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   //DataSet
   const data = {
     labels,
@@ -116,11 +148,21 @@ const Dashboard = () => {
     datasets: platosVendidos,
   };
 
+  const dataTres = {
+    labels,
+    datasets: platosChef,
+  };
+
   useEffect(() => {
     fetchingVentasPorChef();
     fetchingPlatosVendidos();
   }, [sesion]);
 
+  useEffect(() => {
+    if (idChef !== "") {
+      fetchingPlatosChef(idChef);
+    }
+  }, [idChef]);
   return (
     <>
       <NavbarSesion />
@@ -180,15 +222,23 @@ const Dashboard = () => {
                 <div className="mt-5 py-5 border-top text-center">
                   <Row className="justify-content-center">
                     <Col lg="12">
-                      <h2>Ventas por chef</h2>
+                      <h2>Ventas por chefs</h2>
                     </Col>
                     <Bar options={options} data={data} />
                   </Row>
                   <Row className="justify-content-center">
                     <Col lg="12">
-                      <h2>Platos vendidos</h2>
+                      <h2>Platos vendidos de todo los chef</h2>
                     </Col>
                     <Bar options={options} data={dataDos} />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <Col lg="12">
+                      <h2>
+                        Platos vendidos del chef {sesion?.info?.name ?? ""}
+                      </h2>
+                    </Col>
+                    <Bar options={options} data={dataTres} />
                   </Row>
                 </div>
               </div>
