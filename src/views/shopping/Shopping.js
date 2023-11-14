@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Container, Row, Col, Badge, Alert } from "reactstrap";
+import {
+  Button,
+  Card,
+  Container,
+  Row,
+  Col,
+  Badge,
+  Alert,
+  Spinner,
+} from "reactstrap";
 import NavbarClient from "components/Navbars/NavbarClient";
 //Service
 import { API_URL } from "service/config";
 //Hook
 import { useShopping } from "state/stateShopping";
 import "./shopping.css";
-///
+
 const SideMenu = ({ children, isOpen, setIsOpen }) => {
   const handleMenuToggle = () => {
     setIsOpen(!isOpen);
@@ -27,7 +36,8 @@ const SideMenu = ({ children, isOpen, setIsOpen }) => {
 };
 
 const Compras = () => {
-  const { cart, addToProduct, removeFromProduct } = useShopping();
+  const { cart, addToProduct, removeFromProduct, deletFromProduct } =
+    useShopping();
   //Hook
   const [chefs, setChefs] = useState({ data: [], recordsTotal: 0 });
   const [isLoadingChef, setIsLoadingChef] = useState(false);
@@ -35,6 +45,7 @@ const Compras = () => {
   const [isLoadingPlato, setIsLoadingPlato] = useState(false);
   const [error, setError] = useState("");
   const [sideMenu, setSideMenu] = useState(false);
+  const [process, setProcess] = useState(false);
 
   const fetching = async () => {
     setIsLoadingChef(true);
@@ -73,11 +84,49 @@ const Compras = () => {
         setPlatos(json.body);
       } else {
         const json = await response.json();
+        console.error(json);
       }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoadingPlato(false);
+    }
+  };
+
+  const productInCart = (product) => {
+    const condicion = cart.some((item) => item._id === product._id);
+
+    return condicion;
+  };
+
+  const onDismiss = () => setError("");
+
+  const onSubtmit = async (e) => {
+    e.preventDefault();
+    setProcess(true);
+    try {
+      const listaPlatos = cart.map((item) => {
+        return {
+          _id: item._id,
+          id_chef: item.id_chef,
+          cantidad: item.cantidad,
+        };
+      });
+      const response = await fetch(`${API_URL}/carrito`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listaPlatos: listaPlatos }),
+      });
+      if (response.ok) {
+        const json = await response.json();
+      } else {
+        const json = await response.json();
+        setError(json?.body?.error ?? "Error solicitud");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setProcess(false);
     }
   };
 
@@ -99,23 +148,9 @@ const Compras = () => {
     { label: "Comida Étnica", value: "15" },
   ];
 
-  const handleAction = (item) => {
-    const condicion = productInCart(item);
-    if (condicion) {
-      removeFromProduct(item);
-    }
-    addToProduct(item);
-  };
-
-  const productInCart = (product) => {
-    return cart.some((item) => item._id === product._id);
-  };
-  const onDismiss = () => setError("");
-  console.log(cart);
   return (
     <>
       <NavbarClient sideMenu={sideMenu} setSideMenu={setSideMenu} />
-
       <main className="profile-page">
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
@@ -243,10 +278,11 @@ const Compras = () => {
                       ? "Cargando..."
                       : platos.data.length === 0
                       ? "Sin registro"
-                      : platos.data.map((item, index) => {
+                      : platos.data.map((item) => {
                           const isProduct = productInCart(item);
+
                           return (
-                            <Col sm="3" xs="6" key={index}>
+                            <Col sm="3" xs="6" key={item._id}>
                               <small className="d-block text-uppercase font-weight-bold mb-4 mt-4">
                                 {item.nombre}
                               </small>
@@ -265,16 +301,29 @@ const Compras = () => {
                                 <b>Costo:</b>
                                 {item.precio}
                               </small>
-                              <Button
-                                className="my-4"
-                                color={isProduct ? "success" : "primary"}
-                                type="submit"
-                                onClick={() => {
-                                  handleAction(item);
-                                }}
-                              >
-                                +
-                              </Button>
+                              {isProduct ? (
+                                <Button
+                                  className="my-4"
+                                  color="danger"
+                                  type="submit"
+                                  onClick={() => {
+                                    deletFromProduct(item);
+                                  }}
+                                >
+                                  x
+                                </Button>
+                              ) : (
+                                <Button
+                                  className="my-4"
+                                  color="primary"
+                                  type="submit"
+                                  onClick={() => {
+                                    addToProduct(item);
+                                  }}
+                                >
+                                  +
+                                </Button>
+                              )}
                             </Col>
                           );
                         })}
@@ -287,28 +336,75 @@ const Compras = () => {
             </Alert>
           </Container>
           <SideMenu isOpen={sideMenu} setIsOpen={setSideMenu}>
-            <di>
+            <div>
               <div className="mb-2">
                 <h2>Compras</h2>
               </div>
               <div>
                 <div>
                   {cart.map((item, index) => (
-                    <div key={index} className="d-flex flex-column mb-2">
-                      <span>
-                        Producto:<b>{item.nombre}</b>
-                      </span>
-                      <span>
-                        Cantidad:<b>{item?.subTotal ?? 0}</b>
-                      </span>
-                      <span>
-                        Precio:<b>{item?.precio ?? 0}</b>
-                      </span>
+                    <div
+                      key={index}
+                      className="d-flex flex-column mb-2 border p-1"
+                    >
+                      <div className="d-flex justify-content-start">
+                        <div>
+                          <b>Producto:</b>
+                          {item.nombre}
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <div>
+                          <b>Precio:</b>
+                          {item?.precio ?? 0}
+                        </div>
+                        <div>
+                          <b>Subtotal:</b>
+                          {item?.precio * item.cantidad}
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-center">
+                        <Button
+                          className="mr-1"
+                          color="dark"
+                          type="submit"
+                          size="sm"
+                          onClick={() => {
+                            removeFromProduct(item);
+                          }}
+                        >
+                          -
+                        </Button>
+                        <b>{item?.cantidad}</b>
+                        <Button
+                          className="ml-1"
+                          color="dark"
+                          type="submit"
+                          size="sm"
+                          onClick={() => {
+                            addToProduct(item);
+                          }}
+                        >
+                          +
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
+                <div className="d-flex justify-content-center mt-4">
+                  {cart.length > 0 ? (
+                    <Button onClick={onSubtmit} type="button">
+                      <span className="mr-2">
+                        {process ? (
+                          <Spinner size="sm">Loading...</Spinner>
+                        ) : null}
+                      </span>
+                      Confirmar
+                    </Button>
+                  ) : null}
+                </div>
               </div>
-            </di>
+            </div>
           </SideMenu>
         </section>
       </main>

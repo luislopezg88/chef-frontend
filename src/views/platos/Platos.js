@@ -16,7 +16,7 @@ import {
   Alert,
 } from "reactstrap";
 import { useParams, useNavigate } from "react-router-dom";
-import DemoNavbar from "components/Navbars/DemoNavbar.js";
+import NavbarSesion from "components/Navbars/NavbarSesion.js";
 //Service
 import { API_URL } from "service/config";
 
@@ -38,6 +38,7 @@ const Platos = () => {
   const [form, setForm] = useState(initial);
   const [process, setProcess] = useState(false);
   const [error, setError] = useState("");
+  const [img, setImg] = useState("");
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -53,7 +54,7 @@ const Platos = () => {
       const response = await fetch(`${API_URL}/platos/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, idChef }),
+        body: JSON.stringify({ ...form, idChef, file: img }),
       });
       if (response.ok) {
         const json = await response.json();
@@ -106,10 +107,26 @@ const Platos = () => {
     { label: "Platos Saludables" },
   ];
 
+  const onChangeImage = (e) => {
+    if (e.target.files[0] === undefined) return;
+    // Verifica si hay archivos seleccionados
+    if (e.target.files.length === 0) {
+      return;
+    }
+    let files = e.target.files;
+    let name = files[0]?.name ?? "";
+
+    setForm((prev) => ({
+      ...prev,
+      imagen: name,
+    }));
+    setImg(files[0]);
+  };
+  //style={{ background: "#adb5bd" }}
   return (
     <>
-      <DemoNavbar />
-      <main className="profile-page" style={{ background: "#adb5bd" }}>
+      <NavbarSesion />
+      <main className="profile-page">
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
           <div className="shape shape-style-1 shape-default alpha-4">
@@ -137,10 +154,7 @@ const Platos = () => {
         </section>
         <section className="section">
           <Container>
-            <Card
-              className="card-profile shadow mt--300"
-              style={{ background: "#adb5bd" }}
-            >
+            <Card className="card-profile shadow mt--300">
               <div className="px-4">
                 <Row className="justify-content-center">
                   <Col className="order-lg-2" lg="3">
@@ -345,6 +359,16 @@ const Platos = () => {
                               onChange={handleChange}
                             />
                           </InputGroup>
+                        </FormGroup>
+                        <FormGroup>
+                          <Label for="exampleEmail">Subir foto</Label>
+                          <div>
+                            <Input
+                              type="file"
+                              onChange={onChangeImage}
+                              accept="image/jpeg"
+                            />
+                          </div>
                         </FormGroup>
                         <div className="text-center">
                           <Button

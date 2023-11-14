@@ -1,10 +1,9 @@
-import { useContext, createContext, useReducer, useState } from "react";
+import { useContext, createContext, useReducer } from "react";
 //Crear el contexto para consumir
 export const ShoppingContext = createContext();
 // Definicion el reducer
 const shoppingReducer = (state, action) => {
   const { payload, type } = action;
-  console.log(payload);
   switch (type) {
     case "ADD_TO_PRODUCT": {
       const productInCartIndex = state.findIndex(
@@ -13,11 +12,19 @@ const shoppingReducer = (state, action) => {
 
       if (productInCartIndex >= 0) {
         const newState = [...state];
-        newState[productInCartIndex].subTotal += 1;
+        //Cantidad
+        newState[productInCartIndex].cantidad += 1;
+
         return newState;
       }
 
-      return [...state, { ...payload, subTotal: 1 }];
+      return [
+        ...state,
+        {
+          ...payload,
+          cantidad: 1,
+        },
+      ];
     }
     case "REMOVE_FROM_PRODUCT": {
       const productInCartIndex = state.findIndex(
@@ -26,13 +33,17 @@ const shoppingReducer = (state, action) => {
 
       if (productInCartIndex >= 0) {
         const newState = [...state];
-        newState[productInCartIndex].subTotal -= 1;
+        //Cantidad
+        let resta = newState[productInCartIndex].cantidad - 1;
+        //Nuevo estado
+        newState[productInCartIndex].cantidad = resta;
         return newState;
       }
       return state;
     }
     case "DELETE_FROM_PRODUCT":
-      return state.filter((item) => item._id !== payload._id);
+      const newState = state.filter((item) => item._id !== payload._id);
+      return newState;
     case "CLEAR_CART":
       return [];
     default:
@@ -40,45 +51,26 @@ const shoppingReducer = (state, action) => {
       return state;
   }
 };
-
+//Inicializar
 const initialState = [];
 //Crear provider, para proveer el contexto
 export function ShoppingProvider({ children }) {
   const [state, dispatch] = useReducer(shoppingReducer, initialState);
-  const [cart, setCart] = useState([]);
 
   const addToProduct = (product) => {
     dispatch({ type: "ADD_TO_PRODUCT", payload: product });
-    /*
-    //Existe producto en el carrito, obtener indice
-    const productInCartIndex = cart.findIndex(
-      (item) => item._id === product._id
-    );
-    //Existe
-    if (productInCartIndex >= 0) {
-      const clone = structuredClone(cart);
-      clone[productInCartIndex].subTotal += 1;
-      return setCart(clone);
-    }
-    //No existe
-    setCart((prev) => [...prev, { ...product, subTotal: 1 }]);
-    */
   };
 
   const removeFromProduct = (product) => {
     dispatch({ type: "REMOVE_FROM_PRODUCT", payload: product });
-    /*setCart((prev) => prev.filter((item) => item._id !== product._id));*/
   };
 
-  const deletFromProduct = () => {
-    dispatch({ type: "DELETE_FROM_PRODUCT" });
+  const deletFromProduct = (product) => {
+    dispatch({ type: "DELETE_FROM_PRODUCT", payload: product });
   };
 
   const clearCart = () => {
     dispatch({ type: "CLEAR_CART" });
-    /*
-    setCart([]);
-    */
   };
 
   return (

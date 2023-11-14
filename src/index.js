@@ -10,7 +10,7 @@ import Profile from "views/profile/Profile.js";
 import ProfileEdit from "views/profileEdit/ProfileEdit.js";
 import Platos from "views/platos/Platos.js";
 import Shopping from "views/shopping/Shopping.js";
-
+import Dashboard from "views/dashboard/Dashboard.js";
 import Index from "views/Index.js";
 //context
 import { AuthProvider } from "state/stateAuth";
@@ -53,6 +53,7 @@ const router = createBrowserRouter([
         path: "/template",
         element: <Index />,
       },
+      { path: "/dashboard", element: <Dashboard /> },
     ],
   },
 ]);

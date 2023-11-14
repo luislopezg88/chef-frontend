@@ -162,6 +162,19 @@ const Profile = () => {
                       >
                         Edit
                       </Button>
+                      <Button
+                        className="float-right"
+                        color="default"
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+
+                          history(`/dashboard`);
+                        }}
+                        size="sm"
+                      >
+                        Dashboard
+                      </Button>
                     </div>
                   </Col>
                   <Col className="order-lg-1" lg="4">
