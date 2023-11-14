@@ -163,13 +163,13 @@ const Profile = () => {
                         Edit
                       </Button>
                       <Button
-                        className="float-right"
+                        className="float-right mr-2 ml-2"
                         color="default"
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
 
-                          history(`/dashboard`);
+                          history(`/dashboard/${data?._id ?? 0}`);
                         }}
                         size="sm"
                       >

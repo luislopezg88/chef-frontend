@@ -53,7 +53,7 @@ const router = createBrowserRouter([
         path: "/template",
         element: <Index />,
       },
-      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/dashboard/:idChef", element: <Dashboard /> },
     ],
   },
 ]);
