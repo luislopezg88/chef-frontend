@@ -53,8 +53,8 @@ const NavbarSesion = () => {
         >
           <Container>
             <NavbarBrand className="mr-lg-5" to="/" tag={Link}>
-              <h2>
-                <em>Cocina</em>
+              <h2 className="text-white">
+                Cocina
               </h2>
             </NavbarBrand>
             <button className="navbar-toggler" id="navbar_global">
