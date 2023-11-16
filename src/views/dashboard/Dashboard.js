@@ -220,19 +220,19 @@ const Dashboard = () => {
                 </Row>
 
                 <div className="mt-5 py-5 border-top text-center">
-                  <Row className="justify-content-center">
+                  <Row className="justify-content-center mb-5">
                     <Col lg="12">
                       <h2>Ventas por chefs</h2>
                     </Col>
                     <Bar options={options} data={data} />
                   </Row>
-                  <Row className="justify-content-center">
+                  <Row className="justify-content-center my-5">
                     <Col lg="12">
-                      <h2>Platos vendidos de todo los chef</h2>
+                      <h2>Platos vendidos de todos los chefs</h2>
                     </Col>
                     <Bar options={options} data={dataDos} />
                   </Row>
-                  <Row className="justify-content-center">
+                  <Row className="justify-content-center my-5">
                     <Col lg="12">
                       <h2>
                         Platos vendidos del chef {sesion?.info?.name ?? ""}

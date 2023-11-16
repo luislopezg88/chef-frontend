@@ -16919,7 +16919,7 @@ textarea[resize="horizontal"] {
   }
 }
 .section-profile-cover {
-  height: 580px;
+  height: 400px;
   background-size: cover;
   background-position: center center;
 }

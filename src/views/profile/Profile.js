@@ -180,8 +180,8 @@ const Profile = () => {
                   <Col className="order-lg-1" lg="4">
                     <div className="card-profile-stats d-flex justify-content-center">
                       <div>
-                        <span className="heading">{platos.recordsTotal}</span>
-                        <span className="description">Platos</span>
+                        <span className="heading" style={{fontSize: "2rem"}}>{platos.recordsTotal}</span>
+                        <span className="heading">Platos</span>
                       </div>
                     </div>
                   </Col>
@@ -209,7 +209,7 @@ const Profile = () => {
                     {data?.experiencialaboral ?? "Agregar experiencia"}
                   </div>
                 </div>
-                <div className="mt-5 py-5 border-top text-center">
+                <div className="my-5 py-4 border-top text-center" style={{background: "#d5d7ed", borderRadius: "1rem", paddingRight: "15px", paddingLeft: "15px"}}>
                   <Row className="justify-content-center">
                     <Col lg="12">
                       <h2>Platos</h2>
@@ -233,25 +233,27 @@ const Profile = () => {
                       : platos.data.length === 0
                       ? "Sin registro"
                       : platos.data.map((item, index) => (
-                          <Col sm="3" xs="6" key={index}>
-                            <small className="d-block text-uppercase font-weight-bold mb-4 mt-4">
+                          <Col sm="4" xs="6" key={index}>
+                            <div className="card">
+                            <p className="d-block text-uppercase font-weight-bold mb-4 mt-4">
                               {item.nombre}
-                            </small>
+                            </p>
                             <img
                               alt="..."
-                              className="img-fluid rounded shadow"
+                              className="img-fluid rounded shadow m-auto"
                               src={require("assets/img/theme/comida.jpg")}
                               width={100}
                               height={100}
-                              style={{ width: "150px" }}
+                              style={{ width: "250px", height: "250px" }}
                             />
-                            <small className="d-block text-uppercase font-weight-bold mb-1">
+                            <p className="d-block text-uppercase mt-1 mb-0 text-left px-2">
                               <b>{item.descripcion}</b>
-                            </small>
-                            <small className="d-block text-uppercase font-weight-bold mb-1">
+                            </p>
+                            <p className="d-block text-uppercase mb-1 text-left px-2">
                               <b>Costo:</b>
                               {item.precio}
-                            </small>
+                            </p>
+                            </div>
                           </Col>
                         ))}
                   </Row>

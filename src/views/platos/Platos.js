@@ -51,10 +51,24 @@ const Platos = () => {
     e.preventDefault();
     setProcess(true);
     try {
+      const formData = new FormData();
+
+      // Agregar cada campo del formulario al FormData
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      // Agregar la imagen al FormData
+      formData.append("file", img);
+
+      // Agregar el idChef al FormData (si es necesario)
+      formData.append("idChef", idChef);
+
       const response = await fetch(`${API_URL}/platos/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, idChef, file: img }),
+        //headers: { "Content-Type": "application/json" },
+        //body: JSON.stringify({ ...form, idChef, file: img }),
+        body: formData,
       });
       if (response.ok) {
         const json = await response.json();
@@ -66,7 +80,7 @@ const Platos = () => {
       console.error(error);
     } finally {
       setProcess(false);
-      setForm(initial);
+      //setForm(initial);
     }
   };
 
