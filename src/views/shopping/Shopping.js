@@ -46,6 +46,7 @@ const Compras = () => {
   const [error, setError] = useState("");
   const [sideMenu, setSideMenu] = useState(false);
   const [process, setProcess] = useState(false);
+  const [complet, setComplet] = useState(false);
 
   const fetching = async () => {
     setIsLoadingChef(true);
@@ -100,7 +101,7 @@ const Compras = () => {
   };
 
   const onDismiss = () => setError("");
-
+  const onSuccess = () => setComplet(false);
   const onSubtmit = async (e) => {
     e.preventDefault();
     setProcess(true);
@@ -119,6 +120,7 @@ const Compras = () => {
       });
       if (response.ok) {
         const json = await response.json();
+        setComplet(true);
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
@@ -403,6 +405,9 @@ const Compras = () => {
                     </Button>
                   ) : null}
                 </div>
+                <Alert color="success" isOpen={complet} toggle={onSuccess}>
+                  Orden completada.
+                </Alert>
               </div>
             </div>
           </SideMenu>

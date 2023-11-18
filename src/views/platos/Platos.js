@@ -53,15 +53,12 @@ const Platos = () => {
     try {
       const formData = new FormData();
 
-      // Agregar cada campo del formulario al FormData
       Object.entries(form).forEach(([key, value]) => {
         formData.append(key, value);
       });
 
-      // Agregar la imagen al FormData
       formData.append("file", img);
 
-      // Agregar el idChef al FormData (si es necesario)
       formData.append("idChef", idChef);
 
       const response = await fetch(`${API_URL}/platos/`, {
@@ -87,6 +84,7 @@ const Platos = () => {
   const onDismiss = () => setError("");
 
   const catCocinas = [
+    { label: "Seleccionar", value: 0 },
     { label: "Cocina Italiana", value: 1 },
     { label: "Cocina Francesa", value: 2 },
     { label: "Cocina Española", value: 3 },
@@ -102,12 +100,14 @@ const Platos = () => {
   ];
 
   const catEstilos = [
+    { label: "Seleccionar", value: 0 },
     { label: "Cocina de Fusión", value: 1 },
     { label: "Cocina Tradicional", value: 2 },
     { label: "Cocina Contemporánea", value: 3 },
   ];
 
   const catTipo = [
+    { label: "Seleccionar", value: 0 },
     { label: "Platos Principales" },
     { label: "Aperitivos" },
     { label: "Ensaladas" },
@@ -207,22 +207,22 @@ const Platos = () => {
                     <div className="card-profile-stats d-flex justify-content-center">
                       <div>
                         <span className="heading">0</span>
-                        <span className="description">Friends</span>
+                        <span className="description"></span>
                       </div>
                       <div>
                         <span className="heading">0</span>
-                        <span className="description">Photos</span>
+                        <span className="description"></span>
                       </div>
                       <div>
                         <span className="heading">0</span>
-                        <span className="description">Comments</span>
+                        <span className="description"></span>
                       </div>
                     </div>
                   </Col>
                 </Row>
                 <div className="text-center mt-5">
                   <h3>
-                    <b>Chef /</b>
+                    <b>Plato /</b>
                     <span className="font-weight-light mr-1 ml-1">
                       {form?.nombre ?? ""}{" "}
                     </span>

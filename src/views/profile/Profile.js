@@ -3,9 +3,10 @@ import { Button, Card, Container, Row, Col } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import NavbarSesion from "components/Navbars/NavbarSesion.js";
 //Service
-import { API_URL } from "service/config";
+import { API_URL, IMG_URL } from "service/config";
 //Hook
 import { useAuth } from "state/stateAuth";
+
 const Profile = () => {
   const sesion = useAuth();
   const history = useNavigate();
@@ -23,6 +24,7 @@ const Profile = () => {
       });
       if (response.ok) {
         const json = await response.json();
+
         setPlatos(json.body);
       } else {
         const json = await response.json();
@@ -60,7 +62,7 @@ const Profile = () => {
       fetching(sesion.info.id);
     }
   }, [sesion]);
-
+  const imgURl = `${API_URL}/platos/imagen`;
   if (isLoading) {
     return (
       <div className="text-center">
@@ -139,7 +141,7 @@ const Profile = () => {
                         <img
                           alt="..."
                           className="rounded-circle"
-                          src={require("assets/img/theme/team-4-800x800.jpg")}
+                          src={require("assets/img/theme/chef.jpg")}
                         />
                       </a>
                     </div>
@@ -180,7 +182,9 @@ const Profile = () => {
                   <Col className="order-lg-1" lg="4">
                     <div className="card-profile-stats d-flex justify-content-center">
                       <div>
-                        <span className="heading" style={{fontSize: "2rem"}}>{platos.recordsTotal}</span>
+                        <span className="heading" style={{ fontSize: "2rem" }}>
+                          {platos?.recordsTotal ?? 0}
+                        </span>
                         <span className="heading">Platos</span>
                       </div>
                     </div>
@@ -209,9 +213,17 @@ const Profile = () => {
                     {data?.experiencialaboral ?? "Agregar experiencia"}
                   </div>
                 </div>
-                <div className="my-5 py-4 border-top text-center" style={{background: "#d5d7ed", borderRadius: "1rem", paddingRight: "15px", paddingLeft: "15px"}}>
-                  <Row className="justify-content-center">
-                    <Col lg="12">
+                <div
+                  className="my-5 py-4 border-top text-center"
+                  style={{
+                    background: "#d5d7ed",
+                    borderRadius: "1rem",
+                    paddingRight: "15px",
+                    paddingLeft: "15px",
+                  }}
+                >
+                  <Row className="justify-content-center ">
+                    <Col lg="12" className="mb-4">
                       <h2>Platos</h2>
 
                       <Button
@@ -234,25 +246,33 @@ const Profile = () => {
                       ? "Sin registro"
                       : platos.data.map((item, index) => (
                           <Col sm="4" xs="6" key={index}>
-                            <div className="card">
-                            <p className="d-block text-uppercase font-weight-bold mb-4 mt-4">
-                              {item.nombre}
-                            </p>
-                            <img
-                              alt="..."
-                              className="img-fluid rounded shadow m-auto"
-                              src={require("assets/img/theme/comida.jpg")}
-                              width={100}
-                              height={100}
-                              style={{ width: "250px", height: "250px" }}
-                            />
-                            <p className="d-block text-uppercase mt-1 mb-0 text-left px-2">
-                              <b>{item.descripcion}</b>
-                            </p>
-                            <p className="d-block text-uppercase mb-1 text-left px-2">
-                              <b>Costo:</b>
-                              {item.precio}
-                            </p>
+                            <div className="card mb-2">
+                              <p className="d-block text-uppercase font-weight-bold mb-4 mt-4">
+                                {item.nombre}
+                              </p>
+                              {item.imagen === "" ? (
+                                <img
+                                  alt="..."
+                                  className="img-fluid rounded shadow m-auto"
+                                  src={require("assets/img/theme/comida.jpg")}
+                                  width={100}
+                                  height={100}
+                                  style={{ width: "250px", height: "250px" }}
+                                />
+                              ) : (
+                                <img
+                                  alt="..."
+                                  className="img-fluid rounded shadow m-auto"
+                                  src={`${imgURl}/${item.imagen}`}
+                                />
+                              )}
+                              <p className="d-block text-uppercase mt-1 mb-0 text-left px-2">
+                                <b>{item.descripcion}</b>
+                              </p>
+                              <p className="d-block text-uppercase mb-1 text-left px-2">
+                                <b>Costo:</b>
+                                {item.precio}
+                              </p>
                             </div>
                           </Col>
                         ))}
