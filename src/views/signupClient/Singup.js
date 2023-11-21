@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -14,26 +14,26 @@ import {
   Container,
   Row,
   Col,
-  Alert,
   Spinner,
+  Alert,
 } from "reactstrap";
-//Hook
-import { useAuth } from "state/stateAuth";
 //Service
 import { API_URL } from "service/config";
 //Config
 const initial = {
+  nombre: "",
+  genero: "",
+  edad: "",
   correo: "",
   clave: "",
-  rol: "CHEF",
+  rol: "CLIENT",
 };
-
-const Login = () => {
+const SignupClient = () => {
   const history = useNavigate();
   const [form, setForm] = useState(initial);
-  const [process, setProcess] = useState(false);
   const [error, setError] = useState("");
-  const sesion = useAuth();
+  const [process, setProcess] = useState(false);
+  const [complet, setComplet] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -45,15 +45,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcess(true);
+
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form }),
       });
       if (response.ok) {
-        const json = await response.json();
-        sesion.createUser(json.body.user);
+        //const json = await response.json();
+        setComplet(true);
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
@@ -68,9 +69,7 @@ const Login = () => {
 
   const onDismiss = () => setError("");
 
-  if (sesion.isAuthenticated && sesion.info.rol === "CHEF") {
-    return <Navigate to="/profile" />;
-  }
+  const onSuccess = () => setComplet(false);
   return (
     <>
       <main>
@@ -85,23 +84,76 @@ const Login = () => {
             <span />
             <span />
           </div>
+
           <Container className="pt-lg-7">
-            <Alert color="info" isOpen={error !== ""} toggle={onDismiss}>
-              {error}
-            </Alert>
             <Row className="justify-content-center">
               <Col lg="5">
                 <Card className="bg-secondary shadow border-0">
-                  <CardHeader className="bg-white pb-5">
+                  <CardHeader className="bg-white pb-3">
                     <div className="text-muted text-center mb-1">
-                      <small> Sign in</small>
+                      <small>Create new account</small>
                     </div>
-                    <div className="text-muted text-center mb-1">
-                      <b>Chef</b>
+                    <div className="text-muted text-center">
+                      <b>Cliente</b>
                     </div>
                   </CardHeader>
                   <CardBody className="px-lg-5 py-lg-5">
                     <Form role="form" onSubmit={handleSubmit}>
+                      <FormGroup className="mb-3">
+                        <InputGroup className="input-group-alternative">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText></InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            placeholder="Nombre completo"
+                            name="nombre"
+                            value={form.nombre}
+                            onChange={handleChange}
+                            type="text"
+                          />
+                        </InputGroup>
+                      </FormGroup>
+
+                      <FormGroup className="mb-3">
+                        <InputGroup className="input-group-alternative">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="ni ni-email-83" />
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            id="exampleSelect"
+                            type="select"
+                            placeholder="Genero"
+                            name="genero"
+                            value={form.genero}
+                            onChange={handleChange}
+                          >
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">otro</option>
+                          </Input>
+                        </InputGroup>
+                      </FormGroup>
+
+                      <FormGroup className="mb-3">
+                        <InputGroup className="input-group-alternative">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="ni ni-email-83" />
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            id="exampleSelect"
+                            type="number"
+                            placeholder="Edad"
+                            name="edad"
+                            value={form.edad}
+                            onChange={handleChange}
+                          />
+                        </InputGroup>
+                      </FormGroup>
+
                       <FormGroup className="mb-3">
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
@@ -118,6 +170,7 @@ const Login = () => {
                           />
                         </InputGroup>
                       </FormGroup>
+
                       <FormGroup>
                         <InputGroup className="input-group-alternative">
                           <InputGroupAddon addonType="prepend">
@@ -137,7 +190,7 @@ const Login = () => {
                       </FormGroup>
 
                       <div className="text-center">
-                        <Button className="my-4" color="primary" type="subtmit">
+                        <Button className="my-4" color="primary" type="submit">
                           <span className="mr-2">
                             {process ? (
                               <Spinner size="sm">Loading...</Spinner>
@@ -157,15 +210,21 @@ const Login = () => {
                       href="#pablo"
                       onClick={(e) => {
                         e.preventDefault();
-                        history("/signup");
+                        history("/shopping");
                       }}
                     >
-                      <small>Create new account</small>
+                      <small>Login</small>
                     </a>
                   </Col>
                 </Row>
               </Col>
             </Row>
+            <Alert color="danger" isOpen={error !== ""} toggle={onDismiss}>
+              {error}
+            </Alert>
+            <Alert color="success" isOpen={complet} toggle={onSuccess}>
+              Registro completado.
+            </Alert>
           </Container>
         </section>
       </main>
@@ -173,4 +232,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignupClient;

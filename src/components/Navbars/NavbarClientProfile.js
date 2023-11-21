@@ -13,19 +13,13 @@ import {
   Col,
 } from "reactstrap";
 
-const NavbarClient = ({
-  sideMenu,
-  setSideMenu,
-  sideClient,
-  setSideClient,
-  sesion,
-}) => {
+const NavbarClientProfile = ({ sesion }) => {
   const history = useNavigate();
   const [state, setState] = useState({
     collapseClasses: "",
     collapseOpen: false,
   });
-  const { isAuthenticated, info, deleteUser } = sesion;
+  const { info } = sesion;
 
   useEffect(() => {
     let headroom = new Headroom(document.getElementById("navbar-main"));
@@ -103,69 +97,6 @@ const NavbarClient = ({
                     </b>
                   </NavItem>
                 )}
-                <NavItem className="d-none d-lg-block ml-lg-4">
-                  {isAuthenticated ? (
-                    <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      onClick={deleteUser}
-                    >
-                      <span className="nav-link-inner--text ml-1">Signout</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      onClick={() => {
-                        setSideClient(!sideClient);
-                      }}
-                    >
-                      <span className="nav-link-inner--text ml-1">log in</span>
-                    </Button>
-                  )}
-                </NavItem>
-                {isSesion && (
-                  <NavItem className="d-none d-lg-block ml-lg-4">
-                    <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      type="button"
-                      onClick={() => {
-                        history(`/profile-client-edit/${sesion.info.id}`);
-                      }}
-                    >
-                      <span className="nav-link-inner--text ">
-                        <i className="fa fa fa-cogs"></i>
-                      </span>
-                    </Button>
-                  </NavItem>
-                )}
-                {isSesion ? (
-                  <NavItem className="d-none d-lg-block ml-lg-4">
-                    <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      onClick={() => {
-                        setSideMenu(!sideMenu);
-                      }}
-                    >
-                      <span className="nav-link-inner--text ml-1">Compras</span>
-                    </Button>
-                  </NavItem>
-                ) : (
-                  <NavItem className="d-none d-lg-block ml-lg-4">
-                    <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      type="button"
-                      onClick={() => {
-                        history(`/signup-client`);
-                      }}
-                    >
-                      Sign up
-                    </Button>
-                  </NavItem>
-                )}
               </Nav>
             </UncontrolledCollapse>
           </Container>
@@ -175,4 +106,4 @@ const NavbarClient = ({
   );
 };
 
-export default NavbarClient;
+export default NavbarClientProfile;

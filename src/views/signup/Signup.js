@@ -26,12 +26,14 @@ const initial = {
   edad: "",
   correo: "",
   clave: "",
+  rol: "CHEF",
 };
 const Signup = () => {
   const history = useNavigate();
   const [form, setForm] = useState(initial);
   const [error, setError] = useState("");
   const [process, setProcess] = useState(false);
+  const [complet, setComplet] = useState(false);
 
   const handleChange = (e) => {
     setForm((prev) => ({
@@ -51,7 +53,8 @@ const Signup = () => {
         body: JSON.stringify({ ...form }),
       });
       if (response.ok) {
-        const json = await response.json();
+        //const json = await response.json();
+        setComplet(true);
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
@@ -65,6 +68,8 @@ const Signup = () => {
   };
 
   const onDismiss = () => setError("");
+
+  const onSuccess = () => setComplet(false);
 
   return (
     <>
@@ -80,11 +85,7 @@ const Signup = () => {
             <span />
             <span />
           </div>
-
           <Container className="pt-lg-7">
-            <Alert color="info" isOpen={error !== ""} toggle={onDismiss}>
-              {error}
-            </Alert>
             <Row className="justify-content-center">
               <Col lg="5">
                 <Card className="bg-secondary shadow border-0">
@@ -216,6 +217,12 @@ const Signup = () => {
                 </Row>
               </Col>
             </Row>
+            <Alert color="danger" isOpen={error !== ""} toggle={onDismiss}>
+              {error}
+            </Alert>
+            <Alert color="success" isOpen={complet} toggle={onSuccess}>
+              Registro completado.
+            </Alert>
           </Container>
         </section>
       </main>

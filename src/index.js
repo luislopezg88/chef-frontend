@@ -6,8 +6,10 @@ import Guards from "router/guards";
 //Page
 import Login from "views/login/Login.js";
 import Signup from "views/signup/Signup.js";
+import SignupClient from "views/signupClient/Singup.js";
 import Profile from "views/profile/Profile.js";
 import ProfileEdit from "views/profileEdit/ProfileEdit.js";
+import ProfileEditClient from "views/profileEditClient/profileEditClient.js";
 import Platos from "views/platos/Platos.js";
 import Shopping from "views/shopping/Shopping.js";
 import Dashboard from "views/dashboard/Dashboard.js";
@@ -30,12 +32,16 @@ const router = createBrowserRouter([
     element: <Signup />,
   },
   {
+    path: "/signup-client",
+    element: <SignupClient />,
+  },
+  {
     path: "/shopping",
     element: <Shopping />,
   },
   {
     path: "/",
-    element: <Guards />,
+    element: <Guards rol="CHEF" />,
     children: [
       {
         path: "/profile",
@@ -56,6 +62,20 @@ const router = createBrowserRouter([
       { path: "/dashboard/:idChef", element: <Dashboard /> },
     ],
   },
+  {
+    path: "/",
+    element: <Guards rol="CLIENT" />,
+    children: [
+      {
+        path: "/perfil",
+        element: <Profile />,
+      },
+      {
+        path: "/profile-client-edit/:id",
+        element: <ProfileEditClient />,
+      },
+    ],
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -67,7 +87,7 @@ root.render(
   </AuthProvider>
 );
 /*
-//http://localhost:3000/argon-design-system-react
+
 <BrowserRouter>
   <Routes>
     <Route path="/" exact element={<Index />} />

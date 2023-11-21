@@ -15,7 +15,7 @@ import {
   Alert,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
-import NavbarSesion from "components/Navbars/NavbarSesion.js";
+import NavbarClientProfile from "components/Navbars/NavbarClientProfile";
 //Service
 import { API_URL } from "service/config";
 //Hook
@@ -27,21 +27,16 @@ const initial = {
   nombre: "",
   sexo: "",
   edad: "",
-  foto: "",
   telefono: "",
   ubicacion: "",
-  experiencialaboral: "",
-  educacionculinaria: "",
-  disponibilidad: "",
-  especialidadesculinarias: [],
-  habilidadesadicionales: [],
-  redessociales: [],
-  historialpuntuaciones: [],
+  ingredientes: "",
+  gustos: "",
 };
 
-const ProfileEdit = () => {
+const ProfileEditClient = () => {
   const sesion = useAuth();
   const history = useNavigate();
+
   const [form, setForm] = useState(initial);
   const [isLoading, setIsLoading] = useState(false);
   const [process, setProcess] = useState(false);
@@ -53,7 +48,7 @@ const ProfileEdit = () => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/chef/${id}`, {
+      const response = await fetch(`${API_URL}/cliente/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -83,19 +78,11 @@ const ProfileEdit = () => {
     }));
   };
 
-  const handleChangeMulti = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: [...prev[name], value],
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcess(true);
     try {
-      const response = await fetch(`${API_URL}/chef/${form._id}`, {
+      const response = await fetch(`${API_URL}/cliente/${form._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form }),
@@ -105,7 +92,6 @@ const ProfileEdit = () => {
       } else {
         const json = await response.json();
         setError(json?.body?.error ?? "Error solicitud");
-        console.log("error");
       }
     } catch (error) {
       console.error(error);
@@ -116,45 +102,10 @@ const ProfileEdit = () => {
 
   const onDismiss = () => setError("");
 
-  const catEspecialidades = [
-    { label: "Cocina Francesa", value: "1" },
-    { label: "Cocina Italiana", value: "2" },
-    { label: "Cocina Asiática", value: "3" },
-    { label: "Cocina Mexicana", value: "4" },
-    { label: "Cocina Mediterránea", value: "5" },
-    { label: "Cocina Vegetariana", value: "6" },
-    { label: "Cocina Vegana", value: "7" },
-    { label: "Cocina de Fusión", value: "8" },
-    { label: "Cocina de Autor", value: "9" },
-    { label: "Cocina Molecular", value: "10" },
-    { label: "Parrilla/Asados", value: "11" },
-    { label: "Repostería", value: "12" },
-    { label: "Sushi", value: "13" },
-    { label: "Tapas", value: "14" },
-    { label: "Comida Étnica", value: "15" },
-  ];
-
-  const catAdicionales = [
-    { label: "Gestión de Inventarios", value: "1" },
-    { label: "Planificación de Menús", value: "2" },
-    { label: "Normativas Sanitarias", value: "3" },
-    { label: "Presentación de Platos", value: "4" },
-    { label: "Creatividad Culinaria", value: "5" },
-    { label: "Manejo de Utensilios Específicos", value: "6" },
-    { label: "Dominio de Técnicas de Cocina", value: "7" },
-    { label: "Trabajo en Equipo", value: "8" },
-    { label: "Comunicación con el Cliente", value: "9" },
-    { label: "Gestión del Tiempo", value: "10" },
-    { label: "Negociación con Proveedores", value: "11" },
-    { label: "Enología", value: "12" },
-    { label: "Experiencia en Catering", value: "13" },
-    { label: "Cocina Saludable", value: "14" },
-    { label: "Capacidades Multitarea", value: "15" },
-  ];
-
   return (
     <>
-      <NavbarSesion />
+      <NavbarClientProfile sesion={sesion} />
+
       <main className="profile-page">
         <section className="section-profile-cover section-shaped my-0">
           {/* Circles background */}
@@ -192,7 +143,7 @@ const ProfileEdit = () => {
                         <img
                           alt="..."
                           className="rounded-circle"
-                          src={require("assets/img/theme/chef.jpg")}
+                          src={require("assets/img/theme/user.jpg")}
                         />
                       </a>
                     </div>
@@ -207,7 +158,7 @@ const ProfileEdit = () => {
                         color="default"
                         onClick={(e) => {
                           e.preventDefault();
-                          history("/profile");
+                          history("/shopping");
                         }}
                         size="sm"
                         type="button"
@@ -219,15 +170,15 @@ const ProfileEdit = () => {
                   <Col className="order-lg-1" lg="4">
                     <div className="card-profile-stats d-flex justify-content-center">
                       <div>
-                        <span className="heading">_</span>
+                        <span className="heading">0</span>
                         <span className="description"></span>
                       </div>
                       <div>
-                        <span className="heading">_</span>
+                        <span className="heading">0</span>
                         <span className="description"></span>
                       </div>
                       <div>
-                        <span className="heading">_</span>
+                        <span className="heading">0</span>
                         <span className="description"></span>
                       </div>
                     </div>
@@ -313,40 +264,6 @@ const ProfileEdit = () => {
                             />
                           </InputGroup>
                         </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder="Experiencia laboraral"
-                              name="experiencialaboral"
-                              type="textarea"
-                              value={form.experiencialaboral}
-                              onChange={handleChange}
-                              disabled={isLoading}
-                            />
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup>
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-lock-circle-open" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              placeholder="Educacion culinaria"
-                              name="educacionculinaria"
-                              type="textarea"
-                              value={form.educacionculinaria}
-                              onChange={handleChange}
-                              disabled={isLoading}
-                            />
-                          </InputGroup>
-                        </FormGroup>
                         <FormGroup className="mb-3">
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
@@ -369,52 +286,21 @@ const ProfileEdit = () => {
                             </Input>
                           </InputGroup>
                         </FormGroup>
-                        <FormGroup className="mb-3">
+                        <FormGroup>
                           <InputGroup className="input-group-alternative">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <i className="ni ni-email-83" />
+                                <i className="ni ni-lock-circle-open" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              type="select"
-                              placeholder="Tipo de cocina"
-                              name="especialidadesculinarias"
-                              value={form.especialidadesculinarias}
-                              onChange={handleChangeMulti}
+                              placeholder="Ingresa ingredientes de tus gusto separados por coma"
+                              name="ingredientes"
+                              type="textarea"
+                              value={form.ingredientes}
+                              onChange={handleChange}
                               disabled={isLoading}
-                              multiple
-                            >
-                              {catEspecialidades.map((item) => (
-                                <option value={item.value} key={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </Input>
-                          </InputGroup>
-                        </FormGroup>
-                        <FormGroup className="mb-3">
-                          <InputGroup className="input-group-alternative">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="ni ni-email-83" />
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              type="select"
-                              placeholder="Especialidades culinarias"
-                              name="habilidadesadicionales"
-                              value={form.habilidadesadicionales}
-                              onChange={handleChangeMulti}
-                              disabled={isLoading}
-                              multiple
-                            >
-                              {catAdicionales.map((item) => (
-                                <option value={item.value} key={item.value}>
-                                  {item.label}
-                                </option>
-                              ))}
-                            </Input>
+                            />
                           </InputGroup>
                         </FormGroup>
                         <div className="text-center">
@@ -443,14 +329,8 @@ const ProfileEdit = () => {
           </Container>
         </section>
       </main>
-      {/*<SimpleFooter />*/}
     </>
   );
 };
 
-export default ProfileEdit;
-/*
-disponibilidad: "",
-redessociales: [],
-historialpuntuaciones: [],
-*/
+export default ProfileEditClient;

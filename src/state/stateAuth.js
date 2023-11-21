@@ -14,7 +14,7 @@ function getUser() {
     const [{ info, active }] = parseado;
     return { info, active };
   } else {
-    return { info: "", active: false };
+    return { info: {}, active: false };
   }
 }
 
