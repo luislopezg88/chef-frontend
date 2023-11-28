@@ -3,7 +3,7 @@ import { Button, Card, Container, Row, Col } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 import NavbarSesion from "components/Navbars/NavbarSesion.js";
 //Service
-import { API_URL } from "service/config";
+import { API_URL, IMG_URL } from "service/config";
 //Hook
 import { useAuth } from "state/stateAuth";
 
@@ -266,7 +266,7 @@ const Profile = () => {
                                 <img
                                   alt="..."
                                   className="img-fluid rounded shadow m-auto"
-                                  src={`${imgURl}/${item.imagen}`}
+                                  src={`${IMG_URL}/${item.imagen}`}
                                 />
                               )}
 
