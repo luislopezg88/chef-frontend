@@ -6,5 +6,5 @@ export const API_URL =
 
 export const IMG_URL =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:3100"
-    : "https://chef-backend-pi.vercel.app";
+    ? "http://localhost:3100/"
+    : "https://chef-backend-pi.vercel.app/";
