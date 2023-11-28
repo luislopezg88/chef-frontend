@@ -64,8 +64,6 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sesion]);
 
-  const imgURl = `${API_URL}/platos/imagen`;
-
   if (isLoading) {
     return (
       <div className="text-center">
