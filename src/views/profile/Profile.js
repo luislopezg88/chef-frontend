@@ -264,7 +264,7 @@ const Profile = () => {
                                 <img
                                   alt="..."
                                   className="img-fluid rounded shadow m-auto"
-                                  src={`${IMG_URL}/${item.imagen}`}
+                                  src={`https://chef-backend-pi.vercel.app/api/platos/imagenes/${item.imagen}`}
                                 />
                               )}
 
